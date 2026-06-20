@@ -7,6 +7,7 @@ import {
   createEntry,
   filterEntriesByTag,
   getFlowerStyle,
+  getPuzzlePieceStyle,
   normalizeTags,
   parseEntries,
   serializeEntries,
@@ -98,6 +99,19 @@ test("getFlowerStyle maps mood and index into deterministic garden placement", (
   assert.equal(style.x, 74);
   assert.equal(style.y, 42);
   assert.equal(style.scale, 1);
+});
+
+test("getPuzzlePieceStyle maps filled and empty puzzle pieces", () => {
+  const filled = getPuzzlePieceStyle({ mood: "希望" }, 5);
+  const empty = getPuzzlePieceStyle(undefined, 5);
+
+  assert.equal(filled.color, MOODS["希望"].color);
+  assert.equal(filled.soft, MOODS["希望"].soft);
+  assert.equal(filled.active, true);
+  assert.equal(filled.art, "moon");
+  assert.equal(empty.active, false);
+  assert.equal(empty.color, "transparent");
+  assert.equal(empty.art, "moon");
 });
 
 test("buildShareText creates a one-flower text card", () => {

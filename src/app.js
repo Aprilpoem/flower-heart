@@ -1,9 +1,10 @@
 import {
   MOODS,
+  PUZZLE_PIECE_COUNT,
   buildShareText,
   createEntry,
   filterEntriesByTag,
-  getFlowerStyle,
+  getPuzzlePieceStyle,
   parseEntries,
   serializeEntries,
   validateEntry,
@@ -107,28 +108,42 @@ function render() {
 }
 
 function renderGarden() {
-  elements.gardenCount.textContent = `${state.entries.length} 朵花`;
-  elements.gardenStage.querySelectorAll(".flower-button").forEach((node) => node.remove());
+  const filledCount = Math.min(state.entries.length, PUZZLE_PIECE_COUNT);
+  elements.gardenCount.textContent = `${filledCount}/${PUZZLE_PIECE_COUNT} 片`;
+  elements.gardenStage.querySelectorAll(".puzzle-board").forEach((node) => node.remove());
   elements.emptyGarden.hidden = state.entries.length > 0;
 
-  state.entries
-    .slice()
-    .reverse()
-    .forEach((entry, index) => {
-      const style = getFlowerStyle(entry, index);
-      const flower = document.createElement("button");
-      flower.type = "button";
-      flower.className = "flower-button";
-      flower.style.setProperty("--flower-color", style.color);
-      flower.style.setProperty("--flower-soft", style.soft);
-      flower.style.left = `${style.x}%`;
-      flower.style.top = `${style.y}%`;
-      flower.style.transform = `translate(-50%, -50%) scale(${style.scale})`;
-      flower.setAttribute("aria-label", `打开 ${entry.title}`);
-      flower.innerHTML = flowerMarkup();
-      flower.addEventListener("click", () => openDetail(entry));
-      elements.gardenStage.append(flower);
-    });
+  const chronologicalEntries = state.entries.slice().reverse();
+  const board = document.createElement("div");
+  board.className = "puzzle-board";
+  board.setAttribute("aria-label", "拼图花园");
+
+  for (let index = 0; index < PUZZLE_PIECE_COUNT; index += 1) {
+    const entry = chronologicalEntries[index];
+    const style = getPuzzlePieceStyle(entry, index);
+    const piece = document.createElement(entry ? "button" : "div");
+    piece.className = `puzzle-piece puzzle-${style.tone}${style.active ? " is-lit" : ""}`;
+    piece.style.setProperty("--piece-color", style.color);
+    piece.style.setProperty("--piece-soft", style.soft);
+    piece.style.setProperty("--piece-rotation", `${((index % 5) - 2) * 0.45}deg`);
+    piece.innerHTML = `
+      <span class="piece-fill"></span>
+      <span class="piece-art" aria-hidden="true">${puzzleArtMarkup(style.art)}</span>
+      <span class="piece-index">${index + 1}</span>
+    `;
+
+    if (entry) {
+      piece.type = "button";
+      piece.setAttribute("aria-label", `打开拼图 ${index + 1}：${entry.title}`);
+      piece.addEventListener("click", () => openDetail(entry));
+    } else {
+      piece.setAttribute("aria-label", `未点亮拼图 ${index + 1}`);
+    }
+
+    board.append(piece);
+  }
+
+  elements.gardenStage.append(board);
 }
 
 function renderTagFilter() {
@@ -317,6 +332,26 @@ function flowerMarkup() {
     <span class="flower-stem"></span>
     <span class="flower-leaf"></span>
   `;
+}
+
+function puzzleArtMarkup(type) {
+  const art = {
+    flower: `<svg viewBox="0 0 80 80"><path d="M40 49v17M30 65c7-3 8-9 8-9-9 0-13 4-15 10M50 65c-7-3-8-9-8-9 9 0 13 4 15 10"/><path d="M40 30c-10-15-29 1-12 12 2 18 25 18 24 0 17-11-2-27-12-12Z"/><circle cx="40" cy="40" r="7"/></svg>`,
+    leaf: `<svg viewBox="0 0 80 80"><path d="M16 58c28 1 43-15 48-40-26 5-44 21-48 40Z"/><path d="M20 56c14-12 28-22 42-34"/><path d="M38 41c-2-8-8-13-14-15M48 33c3 8 8 12 15 14"/></svg>`,
+    path: `<svg viewBox="0 0 80 80"><path d="M11 64c18-8 15-21 30-26 14-5 14-14 25-24"/><path d="M16 70c18-8 20-20 35-25 13-4 12-13 23-24"/><path d="M20 20h12M48 62h14"/></svg>`,
+    sprout: `<svg viewBox="0 0 80 80"><path d="M40 66V28"/><path d="M40 42c-12-13-24-9-28 5 12 3 22 1 28-5ZM40 33c10-14 23-13 29 0-11 5-21 5-29 0Z"/><path d="M28 68h25"/></svg>`,
+    pond: `<svg viewBox="0 0 80 80"><path d="M13 48c6-15 24-22 42-16 17 6 16 23 1 29-18 7-50 2-43-13Z"/><path d="M23 48c8 5 24 6 35-1M31 28c4-7 9-10 16-13"/></svg>`,
+    moon: `<svg viewBox="0 0 80 80"><path d="M53 12c-18 5-27 23-19 39 6 12 19 18 33 14-7 9-20 14-34 10C13 69 4 48 12 29 19 13 36 5 53 12Z"/><path d="M18 18l4 4M63 34l5-2M54 70l2 5"/></svg>`,
+    star: `<svg viewBox="0 0 80 80"><path d="M40 11l8 21 22 2-17 14 5 22-18-12-18 12 5-22-17-14 22-2 8-21Z"/><path d="M13 13l5 5M64 16l-5 6M16 65l7-4"/></svg>`,
+    vine: `<svg viewBox="0 0 80 80"><path d="M18 68c26-7 42-26 44-56"/><path d="M34 54c-12-5-21-2-26 7 11 5 20 3 26-7ZM45 42c-2-13 3-21 14-24 3 12-1 20-14 24ZM53 30c-9-8-10-18-3-26 8 8 9 17 3 26Z"/></svg>`,
+    seed: `<svg viewBox="0 0 80 80"><path d="M40 15c15 15 22 31 12 43-8 10-24 10-32 0C10 46 25 25 40 15Z"/><path d="M39 22c-3 16-4 30 3 45M28 54c7-2 12-7 15-14"/></svg>`,
+    sun: `<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="15"/><path d="M40 5v13M40 62v13M5 40h13M62 40h13M15 15l9 9M56 56l9 9M65 15l-9 9M24 56l-9 9"/></svg>`,
+    branch: `<svg viewBox="0 0 80 80"><path d="M19 65c17-10 28-25 38-50"/><path d="M35 45c-2-11-8-18-17-20M45 31c9-2 16-7 20-16M28 55c8 2 15 0 22-6"/></svg>`,
+    rain: `<svg viewBox="0 0 80 80"><path d="M22 47c-8-2-12-10-9-18 3-9 12-12 20-8 6-12 24-9 27 5 9 2 13 10 10 18-3 8-10 11-18 10H27"/><path d="M29 59l-4 10M43 57l-4 12M57 59l-4 10"/></svg>`,
+    stone: `<svg viewBox="0 0 80 80"><path d="M12 53c3-19 18-32 37-29 17 3 23 19 16 31-7 13-29 17-45 9-6-3-9-7-8-11Z"/><path d="M24 50c8 6 21 7 34 1M34 32c8-2 15-1 22 3"/></svg>`,
+  };
+
+  return art[type] ?? art.flower;
 }
 
 function escapeHtml(value) {

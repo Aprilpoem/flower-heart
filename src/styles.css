@@ -178,6 +178,111 @@ h3 {
   box-shadow: var(--shadow);
 }
 
+.puzzle-board {
+  position: absolute;
+  inset: 26px;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid rgba(92, 75, 55, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 248, 0.8), rgba(247, 240, 225, 0.42)),
+    rgba(255, 253, 248, 0.38);
+}
+
+.puzzle-piece {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1.5px solid rgba(55, 48, 40, 0.54);
+  border-radius: 7px;
+  padding: 0;
+  background:
+    radial-gradient(circle at 22% 22%, rgba(255, 255, 255, 0.8), transparent 24%),
+    #fffaf3;
+  clip-path: polygon(7% 0, 46% 0, 50% 8%, 56% 0, 100% 0, 100% 40%, 93% 50%, 100% 60%, 100% 100%, 58% 100%, 51% 92%, 44% 100%, 0 100%, 0 59%, 7% 50%, 0 41%, 0 0);
+  color: var(--ink);
+  transform: rotate(var(--piece-rotation));
+  transition:
+    filter 160ms ease,
+    transform 160ms ease,
+    border-color 160ms ease;
+}
+
+.puzzle-piece:nth-child(3n + 2) {
+  clip-path: polygon(0 0, 42% 0, 50% 9%, 58% 0, 100% 0, 100% 45%, 92% 51%, 100% 58%, 100% 100%, 54% 100%, 49% 92%, 43% 100%, 0 100%, 0 62%, 8% 53%, 0 45%);
+}
+
+.puzzle-piece:nth-child(4n) {
+  clip-path: polygon(0 0, 45% 0, 50% 9%, 56% 0, 100% 0, 100% 58%, 92% 50%, 100% 42%, 100% 100%, 62% 100%, 52% 92%, 42% 100%, 0 100%, 0 40%, 8% 50%, 0 60%);
+}
+
+.puzzle-piece.is-lit {
+  border-color: rgba(47, 43, 36, 0.66);
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 253, 248, 0.62), transparent 24%),
+    var(--piece-soft);
+  box-shadow: inset 0 0 0 999px color-mix(in srgb, var(--piece-color) 28%, transparent);
+}
+
+.puzzle-piece:not(.is-lit) {
+  opacity: 0.82;
+}
+
+.puzzle-piece.is-lit:hover,
+.puzzle-piece.is-lit:focus-visible {
+  filter: drop-shadow(0 12px 16px rgba(63, 54, 43, 0.2));
+  transform: rotate(var(--piece-rotation)) translateY(-2px);
+}
+
+.piece-fill {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.34)),
+    var(--piece-color);
+  opacity: 0;
+}
+
+.puzzle-piece.is-lit .piece-fill {
+  opacity: 0.42;
+}
+
+.piece-art {
+  position: absolute;
+  inset: 12%;
+  display: grid;
+  place-items: center;
+  color: rgba(47, 43, 36, 0.72);
+}
+
+.piece-art svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3.1;
+}
+
+.puzzle-piece.is-lit .piece-art {
+  color: rgba(39, 37, 37, 0.82);
+}
+
+.piece-index {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  color: rgba(39, 37, 37, 0.44);
+  font-size: 0.72rem;
+}
+
 .garden-sky {
   position: absolute;
   inset: 0 0 44%;
@@ -199,7 +304,7 @@ h3 {
   position: absolute;
   left: 50%;
   top: 55%;
-  z-index: 2;
+  z-index: 5;
   width: min(280px, calc(100% - 40px));
   transform: translate(-50%, -50%);
   border: 1px solid rgba(222, 216, 207, 0.9);
@@ -599,6 +704,14 @@ h3 {
     min-height: 500px;
   }
 
+  .puzzle-board {
+    inset: 18px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+    padding: 8px;
+  }
+
   .specimen-grid {
     grid-template-columns: 1fr;
   }
@@ -629,6 +742,21 @@ h3 {
 
   .garden-stage {
     min-height: 440px;
+  }
+
+  .puzzle-board {
+    inset: 12px;
+    gap: 5px;
+  }
+
+  .piece-art {
+    inset: 16%;
+  }
+
+  .piece-index {
+    right: 5px;
+    bottom: 4px;
+    font-size: 0.64rem;
   }
 
   .modal-panel {

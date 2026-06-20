@@ -29,6 +29,35 @@ const FLOWER_POSITIONS = [
   [36, 61],
 ];
 
+export const PUZZLE_PIECE_COUNT = 24;
+
+const PUZZLE_ARTS = [
+  "flower",
+  "leaf",
+  "path",
+  "sprout",
+  "pond",
+  "moon",
+  "vine",
+  "seed",
+  "sun",
+  "branch",
+  "rain",
+  "stone",
+  "flower",
+  "leaf",
+  "path",
+  "sprout",
+  "pond",
+  "star",
+  "vine",
+  "seed",
+  "sun",
+  "branch",
+  "rain",
+  "stone",
+];
+
 export function normalizeTags(raw) {
   const values = Array.isArray(raw) ? raw : String(raw ?? "").split(/[\s,，、]+/);
   const seen = new Set();
@@ -114,6 +143,18 @@ export function getFlowerStyle(entry, index) {
     x,
     y,
     scale: 0.88 + (index % 4) * 0.04,
+  };
+}
+
+export function getPuzzlePieceStyle(entry, index) {
+  const mood = entry ? (MOODS[entry.mood] ?? MOODS["平静"]) : undefined;
+
+  return {
+    active: Boolean(entry),
+    color: mood?.color ?? "transparent",
+    soft: mood?.soft ?? "#fffaf3",
+    art: PUZZLE_ARTS[index % PUZZLE_ARTS.length],
+    tone: index % 2 === 0 ? "light" : "warm",
   };
 }
 
