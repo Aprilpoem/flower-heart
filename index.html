@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>心事花园</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">本地私密花园</p>
+          <h1>心事花园</h1>
+        </div>
+        <button class="primary-action" id="plantButton" type="button">种一朵花</button>
+      </header>
+
+      <nav class="tabs" aria-label="主要视图">
+        <button class="tab is-active" type="button" data-view="garden">花园</button>
+        <button class="tab" type="button" data-view="book">标本册</button>
+      </nav>
+
+      <main>
+        <section class="view is-active" id="gardenView" aria-labelledby="gardenTitle">
+          <div class="garden-header">
+            <div>
+              <h2 id="gardenTitle">今天种下的，都会留下形状</h2>
+              <p>每一个瞬间都会长成一朵花。它们只保存在当前浏览器，除非你主动分享。</p>
+            </div>
+            <div class="garden-count" id="gardenCount">0 朵花</div>
+          </div>
+
+          <div class="garden-stage" id="gardenStage" aria-live="polite">
+            <div class="garden-sky"></div>
+            <div class="garden-ground"></div>
+            <div class="empty-garden" id="emptyGarden">
+              <p>这里还没有花。</p>
+              <button class="secondary-action" type="button" id="emptyPlantButton">种下第一朵</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="bookView" aria-labelledby="bookTitle">
+          <div class="book-header">
+            <div>
+              <h2 id="bookTitle">标本册</h2>
+              <p>按时间回看你的花，也可以只看某一种标签。</p>
+            </div>
+            <label class="filter-control">
+              <span>标签</span>
+              <select id="tagFilter">
+                <option value="">全部</option>
+              </select>
+            </label>
+          </div>
+          <div class="specimen-grid" id="specimenGrid"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="modal" id="editorModal">
+      <form class="modal-panel" id="entryForm" method="dialog">
+        <div class="modal-head">
+          <div>
+            <p class="eyebrow">新的标本</p>
+            <h2>种一朵花</h2>
+          </div>
+          <button class="icon-button" id="closeEditor" type="button" aria-label="关闭">×</button>
+        </div>
+
+        <label class="field">
+          <span>花名</span>
+          <input id="titleInput" name="title" autocomplete="off" placeholder="例如：我又不会游泳了" />
+          <small data-error-for="title"></small>
+        </label>
+
+        <label class="field">
+          <span>事件/瞬间</span>
+          <textarea id="momentInput" name="moment" rows="4" placeholder="发生了什么？你注意到了什么？"></textarea>
+          <small data-error-for="moment"></small>
+        </label>
+
+        <label class="field">
+          <span>感受</span>
+          <textarea id="feelingInput" name="feeling" rows="3" placeholder="当时身体里是什么感觉？"></textarea>
+          <small data-error-for="feeling"></small>
+        </label>
+
+        <label class="field">
+          <span>联想</span>
+          <textarea id="associationInput" name="association" rows="3" placeholder="它让你想到什么？"></textarea>
+        </label>
+
+        <label class="field">
+          <span>标签</span>
+          <input id="tagsInput" name="tags" autocomplete="off" placeholder="工作, 健康, 游泳" />
+        </label>
+
+        <fieldset class="mood-field">
+          <legend>心情颜色</legend>
+          <div class="mood-options" id="moodOptions"></div>
+          <small data-error-for="mood"></small>
+        </fieldset>
+
+        <div class="modal-actions">
+          <button class="secondary-action" id="cancelEditor" type="button">取消</button>
+          <button class="primary-action" type="submit">保存成花</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="detailModal">
+      <article class="modal-panel detail-panel">
+        <div class="modal-head">
+          <div>
+            <p class="eyebrow" id="detailDate"></p>
+            <h2 id="detailTitle"></h2>
+          </div>
+          <button class="icon-button" id="closeDetail" type="button" aria-label="关闭">×</button>
+        </div>
+        <div class="detail-flower" id="detailFlower" aria-hidden="true"></div>
+        <dl class="detail-list">
+          <div>
+            <dt>事件/瞬间</dt>
+            <dd id="detailMoment"></dd>
+          </div>
+          <div>
+            <dt>感受</dt>
+            <dd id="detailFeeling"></dd>
+          </div>
+          <div>
+            <dt>联想</dt>
+            <dd id="detailAssociation"></dd>
+          </div>
+          <div>
+            <dt>标签</dt>
+            <dd id="detailTags"></dd>
+          </div>
+        </dl>
+        <div class="share-card" id="sharePreview"></div>
+        <div class="modal-actions">
+          <button class="secondary-action" id="copyShare" type="button">复制分享卡片</button>
+        </div>
+      </article>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
